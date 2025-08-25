@@ -7,6 +7,7 @@
 
 struct SDLPack* initialize();
 struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y);
+void draw(SDL_Renderer* renderer, struct Character* character);
 
 struct SDLPack {
     SDL_Window* window;
@@ -22,18 +23,18 @@ struct Character {
 int main(int, char**) {
     struct SDLPack* sdlPack = initialize();
     struct Character* player = createCharacter("resources/square.png", sdlPack->renderer, 100, 0);
-    SDL_RenderClear(sdlPack->renderer);
-    SDL_Rect r = {player->x, player->y, 100, 100};
-    SDL_RenderCopy(sdlPack->renderer, player->sprite, NULL, &r);
-    SDL_RenderPresent(sdlPack->renderer);
 
     bool running = true;
-    char c;
+    SDL_Event e;
     while (running) {
-        scanf(" %c", &c);
-        if (c == 'q') {
-            running = false;
+        while (SDL_PollEvent(&e)) {
+            switch (e.type) {
+                case SDL_QUIT:
+                    running = false;
+                    break;
+            }
         }
+        draw(sdlPack->renderer, player);
     }
 
     SDL_DestroyWindow(sdlPack->window);
@@ -53,6 +54,7 @@ struct SDLPack* initialize() {
     SDL_Init(SDL_INIT_EVERYTHING);
     sdlPack->window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 600, 600, SDL_WINDOW_SHOWN);
     sdlPack->renderer = SDL_CreateRenderer(sdlPack->window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetRenderDrawColor(sdlPack->renderer, 255, 255, 255, 255);
     return sdlPack;
 }
 
@@ -64,4 +66,11 @@ struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x,
     c->sprite = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
     return c;
+}
+
+void draw(SDL_Renderer* renderer, struct Character* character) {
+    SDL_RenderClear(renderer);
+    SDL_Rect r = {character->x, character->y, 100, 100};
+    SDL_RenderCopy(renderer, character->sprite, NULL, &r);
+    SDL_RenderPresent(renderer);
 }
