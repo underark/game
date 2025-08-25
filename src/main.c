@@ -5,17 +5,22 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+struct SDLPack* initialize();
+
+struct SDLPack {
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+};
+
 int main(int, char**) {
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window* window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 600, 600, SDL_WINDOW_SHOWN);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    struct SDLPack* sdlPack = initialize();
     SDL_Surface* surface = IMG_Load("resources/square.png");
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(sdlPack->renderer, surface);
     SDL_FreeSurface(surface);
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(sdlPack->renderer);
     SDL_Rect r = {0, 0, 100, 100};
-    SDL_RenderCopy(renderer, texture, NULL, &r);
-    SDL_RenderPresent(renderer);
+    SDL_RenderCopy(sdlPack->renderer, texture, NULL, &r);
+    SDL_RenderPresent(sdlPack->renderer);
 
     bool running = true;
     char c;
@@ -26,7 +31,7 @@ int main(int, char**) {
         }
     }
 
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(sdlPack->window);
     SDL_Quit();
     // int w, h, ch;
     // unsigned char* image_data = NULL;
@@ -36,4 +41,12 @@ int main(int, char**) {
     // printf("%i\n", image_data[(0 * 100 + 1) * ch + 0]);
 
     // stbi_image_free(image_data);
+}
+
+struct SDLPack* initialize() {
+    struct SDLPack* sdlPack = malloc(sizeof(struct SDLPack));
+    SDL_Init(SDL_INIT_EVERYTHING);
+    sdlPack->window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 600, 600, SDL_WINDOW_SHOWN);
+    sdlPack->renderer = SDL_CreateRenderer(sdlPack->window, -1, SDL_RENDERER_ACCELERATED);
+    return sdlPack;
 }
