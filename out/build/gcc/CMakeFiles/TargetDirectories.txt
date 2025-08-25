@@ -1,0 +1,3 @@
+/home/alex/projects/C/game/out/build/gcc/CMakeFiles/2DGame.dir
+/home/alex/projects/C/game/out/build/gcc/CMakeFiles/edit_cache.dir
+/home/alex/projects/C/game/out/build/gcc/CMakeFiles/rebuild_cache.dir
