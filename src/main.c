@@ -9,6 +9,8 @@ struct SDLPack* initialize();
 struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y);
 void draw(SDL_Renderer* renderer, struct Character* character);
 
+bool keys[SDL_NUM_SCANCODES] = {false};
+
 struct SDLPack {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -32,21 +34,36 @@ int main(int, char**) {
                 case SDL_QUIT:
                     running = false;
                     break;
+                case SDL_KEYDOWN:
+                    keys[e.key.keysym.scancode] = true;
+                    break;
+                case SDL_KEYUP:
+                    keys[e.key.keysym.scancode] = false;
+                    break;
             }
         }
+
+        if (keys[SDL_SCANCODE_W]) {
+            player->y--;
+        }
+
+        if (keys[SDL_SCANCODE_A]) {
+            player->x--;
+        }
+
+        if (keys[SDL_SCANCODE_S]) {
+            player->y++;
+        }
+
+        if (keys[SDL_SCANCODE_D]) {
+            player->x++;
+        }
         draw(sdlPack->renderer, player);
+        SDL_Delay(16);
     }
 
     SDL_DestroyWindow(sdlPack->window);
     SDL_Quit();
-    // int w, h, ch;
-    // unsigned char* image_data = NULL;
-
-    // image_data = stbi_load("resources/square.png", &w, &h, &ch, 0);
-
-    // printf("%i\n", image_data[(0 * 100 + 1) * ch + 0]);
-
-    // stbi_image_free(image_data);
 }
 
 struct SDLPack* initialize() {
