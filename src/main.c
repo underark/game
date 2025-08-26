@@ -5,14 +5,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define CHARACTER_SIZE 50
+#define WINDOW_SIZE 600
+#define MAX_ENEMIES 10
+
 struct SDLPack* initialize();
 struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y, float speed);
-void draw(SDL_Renderer* renderer, struct Character* character);
+void draw(SDL_Renderer* renderer, struct Character* character, struct Character* enemies[]);
+void freeEnemies(struct Character* enemies[]);
 
 bool keys[SDL_NUM_SCANCODES] = {false};
 
-#define CHARACTER_SIZE 50
-#define WINDOW_SIZE 600
+struct Character* enemies[10];
 
 struct SDLPack {
     SDL_Window* window;
@@ -30,6 +34,10 @@ int main(int, char**) {
     struct SDLPack* sdlPack = initialize();
     struct Character* player = createCharacter("resources/square.png", sdlPack->renderer, 0, 0, 5);
 
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        enemies[i] = createCharacter("resources/square.png", sdlPack->renderer, 200, 200, 5);
+    }
+
     bool running = true;
     SDL_Event e;
     while (running) {
@@ -46,6 +54,7 @@ int main(int, char**) {
                     break;
             }
         }
+
         if (keys[SDL_SCANCODE_W] && player->y >= 0 && !keys[SDL_SCANCODE_S]) {
             player->y -= player->speed;
         }
@@ -61,12 +70,16 @@ int main(int, char**) {
         if (keys[SDL_SCANCODE_D] && (player->x + CHARACTER_SIZE) <= WINDOW_SIZE && !keys[SDL_SCANCODE_A]) {
             player->x += player->speed;
         }
-        draw(sdlPack->renderer, player);
+
+        draw(sdlPack->renderer, player, enemies);
         SDL_Delay(16);
     }
 
     SDL_DestroyWindow(sdlPack->window);
     SDL_Quit();
+    free(sdlPack);
+    free(player);
+    freeEnemies(enemies);
 }
 
 struct SDLPack* initialize() {
@@ -89,9 +102,21 @@ struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x,
     return c;
 }
 
-void draw(SDL_Renderer* renderer, struct Character* character) {
+void draw(SDL_Renderer* renderer, struct Character* character, struct Character* enemies[]) {
     SDL_RenderClear(renderer);
     SDL_Rect r = {character->x, character->y, CHARACTER_SIZE, CHARACTER_SIZE};
     SDL_RenderCopy(renderer, character->sprite, NULL, &r);
+
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        SDL_Rect e = {enemies[i]->x, enemies[i]->y, CHARACTER_SIZE, CHARACTER_SIZE};
+        SDL_RenderCopy(renderer, enemies[i]->sprite, NULL, &e);
+    }
+
     SDL_RenderPresent(renderer);
+}
+
+void freeEnemies(struct Character* enemies[]) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        free(enemies[i]);
+    }
 }
