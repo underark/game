@@ -11,6 +11,9 @@ void draw(SDL_Renderer* renderer, struct Character* character);
 
 bool keys[SDL_NUM_SCANCODES] = {false};
 
+#define CHARACTER_SIZE 50
+#define WINDOW_SIZE 600
+
 struct SDLPack {
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -20,12 +23,12 @@ struct Character {
     SDL_Texture* sprite;
     int x;
     int y;
-    float speed;
+    int speed;
 };
 
 int main(int, char**) {
     struct SDLPack* sdlPack = initialize();
-    struct Character* player = createCharacter("resources/square.png", sdlPack->renderer, 100, 0, 5.5);
+    struct Character* player = createCharacter("resources/square.png", sdlPack->renderer, 0, 0, 5);
 
     bool running = true;
     SDL_Event e;
@@ -51,14 +54,13 @@ int main(int, char**) {
             player->x -= player->speed;
         }
 
-        if (keys[SDL_SCANCODE_S] && player->y + 100 <= 600 && !keys[SDL_SCANCODE_W]) {
+        if (keys[SDL_SCANCODE_S] && (player->y + CHARACTER_SIZE) <= WINDOW_SIZE && !keys[SDL_SCANCODE_W]) {
             player->y += player->speed;
         }
 
-        if (keys[SDL_SCANCODE_D] && player->x + 100 <= 600 && !keys[SDL_SCANCODE_A]) {
+        if (keys[SDL_SCANCODE_D] && (player->x + CHARACTER_SIZE) <= WINDOW_SIZE && !keys[SDL_SCANCODE_A]) {
             player->x += player->speed;
         }
-        printf("%i\n", player->x);
         draw(sdlPack->renderer, player);
         SDL_Delay(16);
     }
@@ -70,7 +72,7 @@ int main(int, char**) {
 struct SDLPack* initialize() {
     struct SDLPack* sdlPack = malloc(sizeof(struct SDLPack));
     SDL_Init(SDL_INIT_EVERYTHING);
-    sdlPack->window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 600, 600, SDL_WINDOW_SHOWN);
+    sdlPack->window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_SIZE, WINDOW_SIZE, SDL_WINDOW_SHOWN);
     sdlPack->renderer = SDL_CreateRenderer(sdlPack->window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawColor(sdlPack->renderer, 255, 255, 255, 255);
     return sdlPack;
@@ -89,7 +91,7 @@ struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x,
 
 void draw(SDL_Renderer* renderer, struct Character* character) {
     SDL_RenderClear(renderer);
-    SDL_Rect r = {character->x, character->y, 100, 100};
+    SDL_Rect r = {character->x, character->y, CHARACTER_SIZE, CHARACTER_SIZE};
     SDL_RenderCopy(renderer, character->sprite, NULL, &r);
     SDL_RenderPresent(renderer);
 }
