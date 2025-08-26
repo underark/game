@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 struct SDLPack* initialize();
-struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y);
+struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y, float speed);
 void draw(SDL_Renderer* renderer, struct Character* character);
 
 bool keys[SDL_NUM_SCANCODES] = {false};
@@ -20,11 +20,12 @@ struct Character {
     SDL_Texture* sprite;
     int x;
     int y;
+    float speed;
 };
 
 int main(int, char**) {
     struct SDLPack* sdlPack = initialize();
-    struct Character* player = createCharacter("resources/square.png", sdlPack->renderer, 100, 0);
+    struct Character* player = createCharacter("resources/square.png", sdlPack->renderer, 100, 0, 5.5);
 
     bool running = true;
     SDL_Event e;
@@ -42,22 +43,22 @@ int main(int, char**) {
                     break;
             }
         }
-
-        if (keys[SDL_SCANCODE_W]) {
-            player->y--;
+        if (keys[SDL_SCANCODE_W] && player->y >= 0 && !keys[SDL_SCANCODE_S]) {
+            player->y -= player->speed;
         }
 
-        if (keys[SDL_SCANCODE_A]) {
-            player->x--;
+        if (keys[SDL_SCANCODE_A] && player->x >= 0 && !keys[SDL_SCANCODE_D]) {
+            player->x -= player->speed;
         }
 
-        if (keys[SDL_SCANCODE_S]) {
-            player->y++;
+        if (keys[SDL_SCANCODE_S] && player->y + 100 <= 600 && !keys[SDL_SCANCODE_W]) {
+            player->y += player->speed;
         }
 
-        if (keys[SDL_SCANCODE_D]) {
-            player->x++;
+        if (keys[SDL_SCANCODE_D] && player->x + 100 <= 600 && !keys[SDL_SCANCODE_A]) {
+            player->x += player->speed;
         }
+        printf("%i\n", player->x);
         draw(sdlPack->renderer, player);
         SDL_Delay(16);
     }
@@ -75,11 +76,12 @@ struct SDLPack* initialize() {
     return sdlPack;
 }
 
-struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y) {
+struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y, float speed) {
     SDL_Surface* surface = IMG_Load(filename);
     struct Character* c = malloc(sizeof(struct Character));
     c->x = x;
     c->y = y;
+    c->speed = speed;
     c->sprite = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
     return c;
