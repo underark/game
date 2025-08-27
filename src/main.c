@@ -7,16 +7,17 @@
 
 #define CHARACTER_SIZE 50
 #define WINDOW_SIZE 600
-#define MAX_ENEMIES 10
+#define MAX_ENEMIES 1
+#define FRAME_TIME 16
 
 struct SDLPack* initialize();
-struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y, float speed);
-void draw(SDL_Renderer* renderer, struct Character* character, struct Character* enemies[]);
+struct Character* createCharacter(int x, int y, float speed);
+void render(SDL_Renderer* renderer, char* spriteName, int x, int y, int size);
 void freeEnemies(struct Character* enemies[]);
 
 bool keys[SDL_NUM_SCANCODES] = {false};
 
-struct Character* enemies[10];
+struct Character* enemies[MAX_ENEMIES];
 
 struct SDLPack {
     SDL_Window* window;
@@ -24,18 +25,17 @@ struct SDLPack {
 };
 
 struct Character {
-    SDL_Texture* sprite;
     int x;
     int y;
-    int speed;
+    float speed;
 };
 
 int main(int, char**) {
     struct SDLPack* sdlPack = initialize();
-    struct Character* player = createCharacter("resources/square.png", sdlPack->renderer, 0, 0, 5);
+    struct Character* player = createCharacter(0, 0, 5);
 
     for (int i = 0; i < MAX_ENEMIES; i++) {
-        enemies[i] = createCharacter("resources/square.png", sdlPack->renderer, 200, 200, 5);
+        enemies[i] = createCharacter(500, 500, 0.1);
     }
 
     bool running = true;
@@ -71,7 +71,22 @@ int main(int, char**) {
             player->x += player->speed;
         }
 
-        draw(sdlPack->renderer, player, enemies);
+        for (int i = 0; i < MAX_ENEMIES; i++) {
+            float vectorX = player->x - enemies[i]->x;
+            float vectorY = player->y - enemies[i]->y;
+            float magnitude = sqrt((vectorX * vectorX) + (vectorY * vectorY));
+            vectorX /= magnitude;
+            vectorY /= magnitude;
+            enemies[i]->x += vectorX * FRAME_TIME * enemies[i]->speed;
+            enemies[i]->y += vectorY * FRAME_TIME * enemies[i]->speed;
+        }
+
+        SDL_RenderClear(sdlPack->renderer);
+        render(sdlPack->renderer, "resources/square.png", player->x, player->y, CHARACTER_SIZE);
+        for (int i = 0; i < MAX_ENEMIES; i++) {
+            render(sdlPack->renderer, "resources/square.png", enemies[i]->x, enemies[i]->y, CHARACTER_SIZE);
+        }
+        SDL_RenderPresent(sdlPack->renderer);
         SDL_Delay(16);
     }
 
@@ -91,28 +106,20 @@ struct SDLPack* initialize() {
     return sdlPack;
 }
 
-struct Character* createCharacter(char* filename, SDL_Renderer* renderer, int x, int y, float speed) {
-    SDL_Surface* surface = IMG_Load(filename);
+struct Character* createCharacter(int x, int y, float speed) {
     struct Character* c = malloc(sizeof(struct Character));
     c->x = x;
     c->y = y;
     c->speed = speed;
-    c->sprite = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
     return c;
 }
 
-void draw(SDL_Renderer* renderer, struct Character* character, struct Character* enemies[]) {
-    SDL_RenderClear(renderer);
-    SDL_Rect r = {character->x, character->y, CHARACTER_SIZE, CHARACTER_SIZE};
-    SDL_RenderCopy(renderer, character->sprite, NULL, &r);
-
-    for (int i = 0; i < MAX_ENEMIES; i++) {
-        SDL_Rect e = {enemies[i]->x, enemies[i]->y, CHARACTER_SIZE, CHARACTER_SIZE};
-        SDL_RenderCopy(renderer, enemies[i]->sprite, NULL, &e);
-    }
-
-    SDL_RenderPresent(renderer);
+void render(SDL_Renderer* renderer, char* spriteName, int x, int y, int size) {
+    SDL_Surface* surface = IMG_Load(spriteName);
+    SDL_Texture* sprite = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    SDL_Rect r = {x, y, size, size};
+    SDL_RenderCopy(renderer, sprite, NULL, &r);
 }
 
 void freeEnemies(struct Character* enemies[]) {
