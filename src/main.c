@@ -8,16 +8,15 @@
 #define CHARACTER_SIZE 50
 #define WINDOW_SIZE 600
 #define MAX_ENEMIES 1
-#define FRAME_TIME 16
+#define FRAME_TIME 1000/60
 
 struct SDLPack* initialize();
 struct Character* createCharacter(int x, int y, float speed);
 void render(SDL_Renderer* renderer, char* spriteName, int x, int y, int size);
+void renderEnemies(struct Character* enemies[], SDL_Renderer* renderer, char* spriteName);
 void freeEnemies(struct Character* enemies[]);
 
 bool keys[SDL_NUM_SCANCODES] = {false};
-
-struct Character* enemies[MAX_ENEMIES];
 
 struct SDLPack {
     SDL_Window* window;
@@ -25,21 +24,24 @@ struct SDLPack {
 };
 
 struct Character {
-    int x;
-    int y;
+    float x;
+    float y;
     float speed;
 };
 
 int main(int, char**) {
     struct SDLPack* sdlPack = initialize();
-    struct Character* player = createCharacter(0, 0, 5);
+    struct Character* player = createCharacter(0, 0, 20);
+
+    struct Character* enemies[MAX_ENEMIES];
 
     for (int i = 0; i < MAX_ENEMIES; i++) {
-        enemies[i] = createCharacter(500, 500, 0.1);
+        enemies[i] = createCharacter(500, 500, 15);
     }
 
     bool running = true;
     SDL_Event e;
+    Uint64 frameStart = SDL_GetTicks64();
     while (running) {
         while (SDL_PollEvent(&e)) {
             switch (e.type) {
@@ -56,19 +58,19 @@ int main(int, char**) {
         }
 
         if (keys[SDL_SCANCODE_W] && player->y >= 0 && !keys[SDL_SCANCODE_S]) {
-            player->y -= player->speed;
+            player->y -= player->speed * 0.16;
         }
 
         if (keys[SDL_SCANCODE_A] && player->x >= 0 && !keys[SDL_SCANCODE_D]) {
-            player->x -= player->speed;
+            player->x -= player->speed * 0.16;
         }
 
         if (keys[SDL_SCANCODE_S] && (player->y + CHARACTER_SIZE) <= WINDOW_SIZE && !keys[SDL_SCANCODE_W]) {
-            player->y += player->speed;
+            player->y += player->speed * 0.16;
         }
 
         if (keys[SDL_SCANCODE_D] && (player->x + CHARACTER_SIZE) <= WINDOW_SIZE && !keys[SDL_SCANCODE_A]) {
-            player->x += player->speed;
+            player->x += player->speed * 0.16;
         }
 
         for (int i = 0; i < MAX_ENEMIES; i++) {
@@ -77,15 +79,13 @@ int main(int, char**) {
             float magnitude = sqrt((vectorX * vectorX) + (vectorY * vectorY));
             vectorX /= magnitude;
             vectorY /= magnitude;
-            enemies[i]->x += vectorX * FRAME_TIME * enemies[i]->speed;
-            enemies[i]->y += vectorY * FRAME_TIME * enemies[i]->speed;
+            enemies[i]->x += vectorX * (enemies[i]->speed * 0.16);
+            enemies[i]->y += vectorY * (enemies[i]->speed * 0.16);
         }
 
         SDL_RenderClear(sdlPack->renderer);
         render(sdlPack->renderer, "resources/square.png", player->x, player->y, CHARACTER_SIZE);
-        for (int i = 0; i < MAX_ENEMIES; i++) {
-            render(sdlPack->renderer, "resources/square.png", enemies[i]->x, enemies[i]->y, CHARACTER_SIZE);
-        }
+        renderEnemies(enemies, sdlPack->renderer, "resources/square.png");
         SDL_RenderPresent(sdlPack->renderer);
         SDL_Delay(16);
     }
@@ -118,8 +118,14 @@ void render(SDL_Renderer* renderer, char* spriteName, int x, int y, int size) {
     SDL_Surface* surface = IMG_Load(spriteName);
     SDL_Texture* sprite = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
-    SDL_Rect r = {x, y, size, size};
-    SDL_RenderCopy(renderer, sprite, NULL, &r);
+    SDL_FRect r = {x, y, size, size};
+    SDL_RenderCopyF(renderer, sprite, NULL, &r);
+}
+
+void renderEnemies(struct Character* enemies[], SDL_Renderer* renderer, char* spriteName) {
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        render(renderer, "resources/square.png", enemies[i]->x, enemies[i]->y, CHARACTER_SIZE);
+    }
 }
 
 void freeEnemies(struct Character* enemies[]) {
