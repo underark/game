@@ -13,6 +13,7 @@
 
 struct SDLPack* initialize();
 struct Player* createPlayerCharacter(int x, int y, float speed);
+struct Enemy* createEnemy(int x, int y, float speed);
 void render(SDL_Renderer* renderer, char* spriteName, int x, int y, int size);
 void renderEnemies(struct Enemy* enemies[], SDL_Renderer* renderer, char* spriteName);
 void freeEnemies(struct Enemy* enemies[]);
@@ -46,7 +47,7 @@ int main(int, char**) {
     struct Enemy* enemies[MAX_ENEMIES];
 
     for (int i = 0; i < MAX_ENEMIES; i++) {
-        enemies[i] = createCharacter(500, 500, 95);
+        enemies[i] = createEnemy(500, 500, 95);
     }
 
     bool running = true;
@@ -87,15 +88,33 @@ int main(int, char**) {
             player->x += player->speed * delta;
         }
 
-        for (int i = 0; i < MAX_ENEMIES; i++) {
-            float vectorX = player->x - enemies[i]->x;
-            float vectorY = player->y - enemies[i]->y;
-            float magnitude = sqrt((vectorX * vectorX) + (vectorY * vectorY));
-            vectorX /= magnitude;
-            vectorY /= magnitude;
-            enemies[i]->x += vectorX * (enemies[i]->speed * delta);
-            enemies[i]->y += vectorY * (enemies[i]->speed * delta);
-            printf("%f\n", vectorX);
+        for (int i = 0; i < MIN_ENEMIES; i++) {
+            if (enemies[i]->alive == false) {
+                enemies[i]->alive = true;
+                float vectorX = player->x - enemies[i]->x;
+                float vectorY = player->y - enemies[i]->y;
+                float magnitude = sqrt((vectorX * vectorX) + (vectorY * vectorY));
+                vectorX /= magnitude;
+                vectorY /= magnitude;
+                enemies[i]->xDirection = vectorX;
+                enemies[i]->yDirection = vectorY;
+                enemies[i]->x += enemies[i]->xDirection * (enemies[i]->speed * delta);
+                enemies[i]->y += enemies[i]->yDirection * (enemies[i]->speed * delta);
+            } else {
+                enemies[i]->x += enemies[i]->xDirection * (enemies[i]->speed * delta);
+                enemies[i]->y += enemies[i]->yDirection * (enemies[i]->speed * delta);
+            }
+
+            if (enemies[i]->x > WINDOW_SIZE || enemies[i]->x < 0) {
+                enemies[i]->alive = false;
+                enemies[i]->x = 550;
+                enemies[i]->y = 550;
+            } else if (enemies[i]->y > WINDOW_SIZE || enemies[i]->y < 0) {
+                enemies[i]->alive = false;
+                enemies[i]->x = 550;
+                enemies[i]->y = 550;
+            }
+
         }
 
         for (int i = 0; i < MAX_ENEMIES; i++) {
