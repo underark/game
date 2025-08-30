@@ -70,6 +70,7 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
   /usr/include/stdlib.h \
   /usr/include/string.h \
   /usr/include/strings.h \
+  /usr/include/time.h \
   /usr/include/wchar.h \
   /usr/include/x86_64-linux-gnu/SDL2/_real_SDL_config.h \
   /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
@@ -103,6 +104,7 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
   /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
   /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
+  /usr/include/x86_64-linux-gnu/bits/time.h \
   /usr/include/x86_64-linux-gnu/bits/time64.h \
   /usr/include/x86_64-linux-gnu/bits/timesize.h \
   /usr/include/x86_64-linux-gnu/bits/types.h \
@@ -120,8 +122,10 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
   /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
   /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
@@ -313,8 +317,6 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vp2intersectvlintrin.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vlintrin.h:
-
 /usr/lib/gcc/x86_64-linux-gnu/13/include/rdseedintrin.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/lwpintrin.h:
@@ -365,6 +367,12 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fintrin.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/include/amxint8intrin.h:
+
+/usr/include/x86_64-linux-gnu/bits/waitflags.h:
+
 /usr/include/features-time64.h:
 
 /usr/include/SDL2/SDL_gesture.h:
@@ -380,6 +388,14 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx5124fmapsintrin.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/include/avxifmaintrin.h:
+
+/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
+/usr/include/SDL2/SDL_version.h:
 
 /usr/include/SDL2/SDL_timer.h:
 
@@ -424,14 +440,6 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 /usr/include/SDL2/SDL_render.h:
 
 /usr/include/SDL2/SDL_keycode.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/avxifmaintrin.h:
-
-/usr/include/SDL2/SDL_version.h:
-
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/bmi2intrin.h:
 
@@ -487,7 +495,11 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 
 /usr/include/SDL2/SDL_misc.h:
 
+/usr/include/x86_64-linux-gnu/bits/time.h:
+
 /usr/include/SDL2/SDL.h:
+
+/usr/include/time.h:
 
 /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
 
@@ -503,19 +515,7 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 
 /usr/include/SDL2/SDL_locale.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fintrin.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/amxint8intrin.h:
-
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:
-
 /usr/include/SDL2/SDL_power.h:
-
-/usr/include/SDL2/SDL_video.h:
-
-/usr/include/SDL2/SDL_rect.h:
-
-/usr/include/x86_64-linux-gnu/bits/floatn.h:
 
 /usr/include/SDL2/SDL_clipboard.h:
 
@@ -623,6 +623,12 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 
 /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
+
+/usr/include/SDL2/SDL_blendmode.h:
+
+/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
+
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
 /usr/include/SDL2/SDL_events.h:
@@ -689,6 +695,10 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 
 /usr/include/x86_64-linux-gnu/bits/types/FILE.h:
 
+/usr/lib/gcc/x86_64-linux-gnu/13/include/avx512vlintrin.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/avx512fp16intrin.h:
@@ -703,10 +713,12 @@ CMakeFiles/2DGame.dir/src/main.c.o: /home/alex/projects/C/game/src/main.c \
 
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
+/usr/include/SDL2/SDL_video.h:
+
+/usr/include/SDL2/SDL_rect.h:
+
+/usr/include/x86_64-linux-gnu/bits/floatn.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
-
-/usr/include/SDL2/SDL_blendmode.h:
-
-/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/wint_t.h:

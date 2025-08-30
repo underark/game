@@ -4,12 +4,16 @@
 #include "stb_image.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define CHARACTER_SIZE 50
+#define ENEMY_SIZE 10
 #define WINDOW_SIZE 600
-#define MAX_ENEMIES 5
-#define MIN_ENEMIES 1
+#define MAX_ENEMIES 10
+#define MIN_ENEMIES 10
 #define MAX_FPS 60
+#define RANDOM_LOCATION rand() % WINDOW_SIZE + 1
 
 struct SDLPack* initialize();
 struct Player* createPlayerCharacter(int x, int y, float speed);
@@ -42,12 +46,13 @@ struct Enemy {
 
 int main(int, char**) {
     struct SDLPack* sdlPack = initialize();
-    struct Player* player = createPlayerCharacter(0, 0, 100);
+    srand(time(NULL));
+    struct Player* player = createPlayerCharacter(0, 0, 300);
 
     struct Enemy* enemies[MAX_ENEMIES];
 
     for (int i = 0; i < MAX_ENEMIES; i++) {
-        enemies[i] = createEnemy(500, 500, 95);
+        enemies[i] = createEnemy(RANDOM_LOCATION, 590, 150);
     }
 
     bool running = true;
@@ -107,23 +112,23 @@ int main(int, char**) {
 
             if (enemies[i]->x > WINDOW_SIZE || enemies[i]->x < 0) {
                 enemies[i]->alive = false;
-                enemies[i]->x = 550;
-                enemies[i]->y = 550;
+                enemies[i]->x = RANDOM_LOCATION;
+                enemies[i]->y = 590;
             } else if (enemies[i]->y > WINDOW_SIZE || enemies[i]->y < 0) {
                 enemies[i]->alive = false;
-                enemies[i]->x = 550;
-                enemies[i]->y = 550;
+                enemies[i]->x = RANDOM_LOCATION;
+                enemies[i]->y = 590;
             }
 
         }
 
-        for (int i = 0; i < MAX_ENEMIES; i++) {
-            SDL_FRect p = {player->x, player->y, CHARACTER_SIZE, CHARACTER_SIZE};
-            SDL_FRect e = {enemies[i]->x, enemies[i]->y, CHARACTER_SIZE, CHARACTER_SIZE};
-            if (SDL_HasIntersectionF(&p, &e)) {
-                running = false;
-            }
-        }
+        // for (int i = 0; i < MAX_ENEMIES; i++) {
+        //     SDL_FRect p = {player->x, player->y, CHARACTER_SIZE, CHARACTER_SIZE};
+        //     SDL_FRect e = {enemies[i]->x, enemies[i]->y, CHARACTER_SIZE, CHARACTER_SIZE};
+        //     if (SDL_HasIntersectionF(&p, &e)) {
+        //         running = false;
+        //     }
+        // }
 
         SDL_RenderClear(sdlPack->renderer);
         render(sdlPack->renderer, "resources/square.png", player->x, player->y, CHARACTER_SIZE);
@@ -181,7 +186,7 @@ void render(SDL_Renderer* renderer, char* spriteName, int x, int y, int size) {
 
 void renderEnemies(struct Enemy* enemies[], SDL_Renderer* renderer, char* spriteName) {
     for (int i = 0; i < MAX_ENEMIES; i++) {
-        render(renderer, "resources/square.png", enemies[i]->x, enemies[i]->y, CHARACTER_SIZE);
+        render(renderer, "resources/square.png", enemies[i]->x, enemies[i]->y, ENEMY_SIZE);
     }
 }
 
